@@ -16,6 +16,7 @@ main :-
         snoc(Q8, i, Q9),
         snoc(Q9, j, Q10),
         builtin:print(Q10),
+        head(Q10, X10), builtin:print(X10),
         tail(Q10, Q11),
         tail(Q11, Q12),
         tail(Q12, Q13),
@@ -25,6 +26,7 @@ main :-
         tail(Q16, Q17),
         tail(Q17, Q18),
         tail(Q18, Q19),
+        head(Q19, X19), builtin:print(X19),
         tail(Q19, Q20),
         builtin:print(Q20).
 
@@ -39,6 +41,10 @@ snoc(q(F, R, []), X0, Q) :-
         true |
         rotate(q(F, [X0|R], []), F2),
         Q = q(F2, [], F2).
+
+head(q([X0|F], R, [_|S]), X) :-
+        true |
+        X = X0.
 
 tail(q([X0|F], R, [_|S]), Q) :-
         true |
