@@ -1,0 +1,59 @@
+/* PFDS p.85 */
+/* 7.2 Realtime Queue */
+
+:- module main.
+
+main :-
+        empty(Q0),
+        snoc(Q0, a, Q1),
+        snoc(Q1, b, Q2),
+        snoc(Q2, c, Q3),
+        snoc(Q3, d, Q4),
+        snoc(Q4, e, Q5),
+        snoc(Q5, f, Q6),
+        snoc(Q6, g, Q7),
+        snoc(Q7, h, Q8),
+        snoc(Q8, i, Q9),
+        snoc(Q9, j, Q10),
+        builtin:print(Q10),
+        tail(Q10, Q11),
+        tail(Q11, Q12),
+        tail(Q12, Q13),
+        tail(Q13, Q14),
+        tail(Q14, Q15),
+        tail(Q15, Q16),
+        tail(Q16, Q17),
+        tail(Q17, Q18),
+        tail(Q18, Q19),
+        tail(Q19, Q20),
+        builtin:print(Q20).
+
+empty(Q) :-
+        true |
+        Q = q([], [], []).                  % q(F, R, S)
+
+snoc(q(F, R, [_|S]), X0, Q) :-
+        true |
+        Q = q(F, [X0|R], S).
+snoc(q(F, R, []), X0, Q) :-
+        true |
+        rotate(q(F, [X0|R], []), F2),
+        Q = q(F2, [], F2).
+
+tail(q([X0|F], R, [_|S]), Q) :-
+        true |
+        Q = q(F, R, S).
+tail(q([X0|F], R, []), Q) :-
+        true |
+        rotate(q(F, R, []), F2),
+        Q = q(F2, [], F2).
+
+rotate(q([], [Y], A), Q) :-
+        true |
+        Q = [Y|A].
+rotate(q([X|XS], [Y|YS], A), Q) :-
+        true |
+        rotate(q(XS, YS, [Y|A]), Q2),
+        Q = [X|Q2].
+
+/* END */

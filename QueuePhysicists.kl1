@@ -1,0 +1,90 @@
+/* PFDS p.73 */
+/* 6.4.2 Physicists Queue */
+
+:- module main.
+
+main :-
+        empty(Q0),
+        snoc(Q0, a, Q1),
+        snoc(Q1, b, Q2),
+        snoc(Q2, c, Q3),
+        snoc(Q3, d, Q4),
+        snoc(Q4, e, Q5),
+        snoc(Q5, f, Q6),
+        snoc(Q6, g, Q7),
+        snoc(Q7, h, Q8),
+        snoc(Q8, i, Q9),
+        snoc(Q9, j, Q10),
+        builtin:print(Q10),
+        head(Q10, X10), builtin:print(X10),
+        tail(Q10, Q11),
+        tail(Q11, Q12),
+        tail(Q12, Q13),
+        tail(Q13, Q14),
+        tail(Q14, Q15),
+        tail(Q15, Q16),
+        tail(Q16, Q17),
+        tail(Q17, Q18),
+        tail(Q18, Q19),
+        head(Q19, X19), builtin:print(X19),
+        tail(Q19, Q20),
+        builtin:print(Q20).
+
+empty(Q) :-
+        true |
+        Q = q([], 0, [], 0, []).            % q(W, LF, F, LR, R)
+
+snoc(q(W, LF, F, LR, R), X0, Q) :-
+        true |
+        LR2 := LR + 1,
+        check(q(W, LF, F, LR2, [X0|R]), Q).
+
+head(q([X0|W], LF, [_|F], LR, R), X) :-
+        true |
+        X = X0.
+tail(q([X0|W], LF, [_|F], LR, R), Q) :-
+        true |
+        LF2 := LF - 1,
+        check(q(W, LF2, F, LR, R), Q).
+
+check(q(W, LF, F, LR, R), Q) :-
+        LF >= LR |
+        checkw(q(W, LF, F, LR, R), Q).
+check(q(W, LF, F, LR, R), Q) :-
+        LF < LR |
+        LF2 := LF + LR,
+        reverse(R, R2),
+        append(F, R2, F2),
+        checkw(q(F, LF2, F2, 0, []), Q).
+
+checkw(q([], LF, F, LR, R), Q) :-
+        true |
+        Q = q(F, LF, F, LR, R).
+checkw(q([X0|W], LF, F, LR, R), Q) :-
+        true |
+        Q = q([X0|W], LF, F, LR, R).
+
+/* GHC-intro.pdf */
+
+append([], Y, Z) :-
+        true |
+        Y = Z.
+append([A|X], Y, Z0) :-
+        true |
+        Z0 = [A|Z],
+        append(X, Y, Z).
+
+reverse(L, Lr) :-
+        true |
+        reverse(L, [], Lr).
+reverse([], S,Lr) :-
+        true |
+        Lr = S.
+reverse([A|L], S, Lr) :-
+        true |
+        reverse(L, [A|S], Lr).
+
+/* END */
+
+        
+        
