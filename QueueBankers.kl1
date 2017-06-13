@@ -70,7 +70,7 @@ append([A|X], Y, Z0) :-
 reverse(L, Lr) :-
         true |
         reverse(L, [], Lr).
-reverse([], S,Lr) :-
+reverse([], S, Lr) :-
         true |
         Lr = S.
 reverse([A|L], S, Lr) :-
@@ -78,6 +78,3 @@ reverse([A|L], S, Lr) :-
         reverse(L, [A|S], Lr).
 
 /* END */
-
-        
-        
