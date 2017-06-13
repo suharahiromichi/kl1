@@ -1,0 +1,124 @@
+/* PFDS p.99 */
+/* 8.1 Hood-Melville Realtime Queue */
+
+:- module main.
+
+main :-
+        empty(Q0),
+        snoc(Q0, a, Q1), builtin:print(Q1),
+        snoc(Q1, b, Q2), builtin:print(Q2),
+        snoc(Q2, c, Q3), builtin:print(Q3),
+        snoc(Q3, d, Q4), builtin:print(Q4),
+        snoc(Q4, e, Q5), builtin:print(Q5),
+        snoc(Q5, f, Q6), builtin:print(Q6),
+        snoc(Q6, g, Q7), builtin:print(Q7),
+        snoc(Q7, h, Q8), builtin:print(Q8),
+        snoc(Q8, i, Q9), builtin:print(Q9),
+        snoc(Q9, j, Q10), builtin:print(Q10),
+        head(Q10, X10), builtin:print(X10),
+        tail(Q10, Q11), builtin:print(Q11),
+        tail(Q11, Q12), builtin:print(Q12),
+        tail(Q12, Q13), builtin:print(Q13),
+        tail(Q13, Q14), builtin:print(Q14),
+        tail(Q14, Q15), builtin:print(Q15),
+        tail(Q15, Q16), builtin:print(Q16),
+        tail(Q16, Q17), builtin:print(Q17),
+        tail(Q17, Q18), builtin:print(Q18),
+        tail(Q18, Q19), builtin:print(Q19),
+        head(Q19, X19), builtin:print(X19),
+        tail(Q19, Q20), builtin:print(Q20).
+
+empty(Q) :-
+        true |
+        Q = q(0, [], idle, 0, []).          % q(LF, F, S, LR, R)
+/*
+isEmpty(0, F, Stat, LR, R) :-
+        true.
+*/
+
+snoc(q(LF, F, S, LR, R), X0, Q) :-
+        true |
+        LR2 := LR + 1,
+        check(q(LF, F, S, LR2, [X0|R]), Q).
+
+head(q(LF, [X|F], S, LR, R), X0) :-
+        true |
+        X0 = X.
+tail(q(LF, [X|F], S, LR, R), Q) :-
+        true |
+        LF2 := LF - 1,
+        invalidate(S, S2),
+        check(q(LF2, F, S2, LR, R), Q).
+
+check(q(LF, F, S, LR, R), Q) :-
+        LF >= LR |
+        exec2(q(LF, F, S, LR, R), Q).
+check(q(LF, F, S, LR, R), Q) :-
+        LF < LR |
+        LF2 := LF + LR,
+        exec2(q(LF2, F, reversing(0, F, [], R, []), 0, []), Q).
+
+exec2(q(LF, F, S, LR, R), Q) :-
+        true |
+        exec(S, S1),
+        exec(S1, S2),
+        exec22(S2, F, S3, F2),
+        Q = q(LF, F2, S3, LR, R).
+
+exec22(reversing(Ok, F, F1, R, R1), F0, S2, F2) :-
+        true |
+        S2 = reversing(Ok, F, F1, R, R1),
+        F2 = F0.
+exec22(appending(Ok, F, R), F0, S2, F2) :-
+        true |
+        S2 = appending(Ok, F, R),
+        F2 = F0.
+exec22(done(F), F0, S2, F2) :-
+        true |
+        S2 = idle,                          % %%
+        F2 = F.                             % %%
+exec22(idle, F0, S2, F2) :-
+        true |
+        S2 = idle,
+        F2 = F0.
+
+exec(reversing(Ok, [X|F], F1, [Y|R], R1), S) :-
+        true |
+        Ok2 := Ok + 1,
+        S = reversing(Ok2, F, [X|F1], R, [Y|R1]).
+exec(reversing(Ok, [], F1, [Y], R1), S) :-
+        true |
+        S = appending(Ok, F1, [Y|R1]).
+exec(appending(Ok, [X|F1], R1), S) :-
+        Ok =\= 0 |
+        Ok2 := Ok - 1,
+        S = appending(Ok2, F1, [X|R1]).
+exec(appending(Ok, F1, R1), S) :-
+        Ok =:= 0 |
+        S = done(R1).
+exec(done(F1), S) :-
+        true |
+        S = done(F1).
+exec(idle, S) :-
+        true |
+        S = idle.
+
+invalidate(reversing(Ok, F, F1, R, R1), S) :-
+        true |
+        Ok2 := Ok - 1,
+        S = reversing(Ok2, F, F1, R, R1).
+invalidate(appending(Ok, F1, R1), S) :-
+        Ok =\= 0 |
+        Ok2 := Ok - 1,
+        S = appending(Ok2, F1, R1).
+invalidate(appending(Ok, F1, [X|R1]), S) :-
+        Ok =:= 0 |
+        S = done(R1).
+invalidate(done(F1), S) :-
+        true |
+        S = done(F1).
+invalidate(idle, S) :-
+        true |
+        S = idle.
+
+/* END */
