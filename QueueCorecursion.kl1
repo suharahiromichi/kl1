@@ -1,0 +1,62 @@
+/* 
+ * KL1 の co-recursion で幅優先探索をおこなう。
+ *
+ * 2017_06_19 @suharahiromichi
+ *
+ * なぜ Haskell ではキューが軽んじられてるか？
+ * http://d.hatena.ne.jp/kazu-yamamoto/20121107/1352259739
+ * を KL1 に書き換えた。
+*/
+
+:- module main.
+
+main :-
+        tree(T),
+%       builtin:print(T),
+        mkQueue(T, Q),
+%       builtin:print(Q),
+        postprocess(Q, L),
+        builtin:print(L).
+
+tree(T) :-
+        T = node(node(node(leaf, 3, leaf), 2, node(leaf, 4, leaf)),
+                 1,
+                 node(node(leaf, 6, leaf), 5, node(leaf, 7, leaf))).
+
+/* 余再帰の箇所 */
+mkQueue(T, Q) :-
+        Q = [T|Q2],                         % 順番を入れ替えても
+        walk(1, Q, Q2).                     % 同じ動作になる。
+
+/*
+  walk を spy すると、Nは部分木の数の8まで進み、
+  leafの数だけ減って、最後にちょうど0になる。
+*/
+walk(0, _, Q2) :-
+        true |
+        Q2 = [].
+walk(N, [leaf|Q], Q2) :-
+        true |
+        N1 := N - 1,
+        walk(N1, Q, Q2).
+walk(N, [node(L, _, R)|Q], Q2) :-
+        true |
+        N1 := N + 1,
+        walk(N1, Q, Q1),
+        Q2 = [L, R|Q1].
+
+/*
+  nodeのデータを取り出すだけで、本質的ではない。
+*/
+postprocess([leaf|Q], L) :-
+        true |
+        postprocess(Q, L).
+postprocess([node(_, X, _)|Q], L) :-
+        true |
+        postprocess(Q, L2),
+        L = [X|L2].
+postprocess([], L) :-
+        true |
+        L = [].
+
+/* END */
